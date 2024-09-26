@@ -70,10 +70,9 @@ public class Puzzle4 {
 
             // Generar los hijos del nodo actual y agregarlos a la cola
             int[] estadoActual = nodoActual.getNumeros();
-            nodos.add(generaHijo(estadoActual, 0)); // Hijo con el primer swap
-            nodos.add(generaHijo(estadoActual, 1)); // Hijo con el segundo swap
-            nodos.add(generaHijo(estadoActual, 2)); // Hijo con el tercer swap
-            nodos.add(generaHijo(estadoActual, 3)); // Hijo con el cuarto swap
+            nodos.add(generaHijo(estadoActual, 1)); // Hijo izquierdo
+            nodos.add(generaHijo(estadoActual, 2)); // Hijo centro
+            nodos.add(generaHijo(estadoActual, 3)); // Hijo derecho
         }
     }
 
