@@ -29,11 +29,13 @@ public class FormTicTacToe extends javax.swing.JFrame {
     public static JLabel puntajeCirculo;
     
     private Jugador jugador1, jugador2;
+    public static String selectedGameMode;
     private Tablero tablero;
 
-    public FormTicTacToe(Jugador jugador1, Jugador jugador2) {
+    public FormTicTacToe(Jugador jugador1, Jugador jugador2, String selectedGameMode) {
         this.jugador1 = jugador1;
         this.jugador2 = jugador2;
+        this.selectedGameMode = selectedGameMode;
         init();
         imgJugadorEquis =  jugadorEquis;
         imgJugadorCirculo = jugadorCirculo;
@@ -56,7 +58,7 @@ public class FormTicTacToe extends javax.swing.JFrame {
         lblNombreJugador1.setText(jugador1.getNombre());
         lblNombreJugador2.setText(jugador2.getNombre());
         
-        tablero = new Tablero();
+        tablero = new Tablero(selectedGameMode);
         tablero.setJugador1(jugador1);
         tablero.setJugador2(jugador2);
         tablero.setAltoCI(110);

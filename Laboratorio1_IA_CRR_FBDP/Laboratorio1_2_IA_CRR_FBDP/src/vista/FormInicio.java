@@ -15,8 +15,10 @@ import modelo.TipoImagen;
 
 public class FormInicio extends javax.swing.JFrame {
 
-    public FormInicio() {
-        
+    String selectedGameMode;
+    
+    public FormInicio(String selectedGameMode) {
+        this.selectedGameMode = selectedGameMode;
         init();
     
     }
@@ -326,7 +328,9 @@ public class FormInicio extends javax.swing.JFrame {
             jugador2.setNombre(txtJugador2.getText());
         }
         
-        FormTicTacToe gatito = new FormTicTacToe(jugador1, jugador2);
+        System.out.println("selected: " + selectedGameMode);
+        
+        FormTicTacToe gatito = new FormTicTacToe(jugador1, jugador2, selectedGameMode);
         gatito.setVisible(true);
     }//GEN-LAST:event_lblIniciarMousePressed
 

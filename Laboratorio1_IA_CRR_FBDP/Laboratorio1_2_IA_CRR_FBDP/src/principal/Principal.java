@@ -1,7 +1,6 @@
-
 package principal;
 
-import vista.FormInicio;
+import vista.ModoJuego;
 
 /**
  *
@@ -14,8 +13,8 @@ public class Principal {
 
     public static void main(String[] args) {
         
-        FormInicio formInicio = new FormInicio();
-        formInicio.setVisible(true);
+        ModoJuego mod = new ModoJuego();
+        mod.setVisible(true);
 
     }
     
