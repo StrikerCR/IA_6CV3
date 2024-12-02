@@ -1,11 +1,10 @@
 import java.util.List;
-import java.util.ArrayList;
 
 public class Classifier {
 
     public static double euclideanDistance(double[] a, double[] b) {
-        if (a.length == 0 || b.length == 0) {
-            throw new IllegalArgumentException("Error: Uno de los arreglos esta vacio.");
+        if (a == null || b == null || a.length == 0 || b.length == 0) {
+            throw new IllegalArgumentException("Error: Uno de los arreglos está vacío o es nulo.");
         }
     
         double sum = 0;
@@ -13,7 +12,7 @@ public class Classifier {
             sum += Math.pow(a[i] - b[i], 2);
         }
         return Math.sqrt(sum);
-    }
+    }    
 
     public static String oneNN(double[] testPoint, List<double[]> trainData, List<String> trainLabels) {
         double minDistance = Double.MAX_VALUE;

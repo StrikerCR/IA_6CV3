@@ -5,11 +5,16 @@ public class Validation {
     public static double holdOut(List<double[]> data, List<String> labels, double splitRatio) {
         int splitIndex = (int) (data.size() * splitRatio);
 
-        List<double[]> trainData = data.subList(0, splitIndex);
-        List<String> trainLabels = labels.subList(0, splitIndex);
+        List<double[]> trainData = new ArrayList<>(data.subList(0, splitIndex));
+        List<String> trainLabels = new ArrayList<>(labels.subList(0, splitIndex));
 
-        List<double[]> testData = data.subList(splitIndex, data.size());
-        List<String> testLabels = labels.subList(splitIndex, labels.size());
+        List<double[]> testData = new ArrayList<>(data.subList(splitIndex, data.size()));
+        List<String> testLabels = new ArrayList<>(labels.subList(splitIndex, labels.size()));
+
+        if (trainData.isEmpty() || testData.isEmpty()) {
+            System.out.println("Error: Una de las divisiones está vacía. Revisa los datos o el split ratio.");
+            return 0.0;
+        }
 
         return evaluate(testData, testLabels, trainData, trainLabels);
     }
@@ -17,13 +22,13 @@ public class Validation {
     public static double kFoldCrossValidation(List<double[]> data, List<String> labels, int k) {
         int foldSize = data.size() / k;
         double totalAccuracy = 0;
-    
+
         for (int i = 0; i < k; i++) {
             List<double[]> trainData = new ArrayList<>();
             List<String> trainLabels = new ArrayList<>();
             List<double[]> testData = new ArrayList<>();
             List<String> testLabels = new ArrayList<>();
-    
+
             for (int j = 0; j < data.size(); j++) {
                 if (j >= i * foldSize && j < (i + 1) * foldSize) {
                     testData.add(data.get(j));
@@ -33,17 +38,15 @@ public class Validation {
                     trainLabels.add(labels.get(j));
                 }
             }
-    
-           // System.out.println("Fold " + i + ": Tamano de entrenamiento = " + trainData.size() + ", Tamaño de prueba = " + testData.size());
-    
+
             if (trainData.isEmpty() || testData.isEmpty()) {
-                System.out.println("Error: Una de las divisiones esta vacia.");
+                System.out.println("Error: Una de las divisiones está vacía.");
                 continue;
             }
-    
+
             totalAccuracy += evaluate(testData, testLabels, trainData, trainLabels);
         }
-    
+
         return totalAccuracy / k;
     }
 
@@ -66,7 +69,8 @@ public class Validation {
         return correct / data.size();
     }
 
-    private static double evaluate(List<double[]> testData, List<String> testLabels, List<double[]> trainData, List<String> trainLabels) {
+    private static double evaluate(List<double[]> testData, List<String> testLabels, 
+                                   List<double[]> trainData, List<String> trainLabels) {
         int correct = 0;
 
         for (int i = 0; i < testData.size(); i++) {

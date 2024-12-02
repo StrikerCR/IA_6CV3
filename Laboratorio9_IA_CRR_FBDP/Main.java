@@ -6,69 +6,77 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        // Ruta al archivo del dataset
-        String filePath = "wdbc.data"; // Cambia según el archivo
-        String delimiter = ","; // Ajusta según el separador del dataset
+        // Cambiar el dataset según el archivo
+        String filePath = "wdbc.data"; // Cambiar por "wine.data" o "wdbc.data"
+        int labelColumn;
+        int ignoreColumns;
 
-        ArrayList<double[]> data = new ArrayList<>();
-        ArrayList<String> labels = new ArrayList<>();
-
-        // Configurar el índice de la columna de etiquetas y si se debe ignorar la columna ID
-        int labelColumn = 1; // indice de la columna de etiquetas
-        int ignoreColumns = 1; // Número de columnas iniciales que ignorar (ej., ID)
-
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                line = line.trim(); // Eliminar espacios en blanco
-                if (line.isEmpty()) {
-                    continue; // Ignorar líneas vacías
-                }
-
-                // Separar la línea según el delimitador
-                String[] values = line.split(delimiter);
-                if (values.length < ignoreColumns + 2) {
-                    System.out.println("Línea inválida (esperadas al menos 2 columnas después de las ignoradas): " + line);
-                    continue;
-                }
-
-                try {
-                    // Construir el array de características (ignorar columnas iniciales y etiqueta)
-                    double[] features = new double[values.length - ignoreColumns - 1];
-                    int featureIndex = 0;
-
-                    for (int i = 0; i < values.length; i++) {
-                        if (i < ignoreColumns) {
-                            continue; // Ignorar columnas iniciales (ej., ID)
-                        }
-                        if (i == labelColumn) {
-                            labels.add(values[i]); // Asignar la etiqueta
-                        } else {
-                            features[featureIndex++] = Double.parseDouble(values[i]);
-                        }
-                    }
-                    data.add(features);
-                } catch (NumberFormatException e) {
-                    System.out.println("Error al convertir valores numéricos en la línea: " + line);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error al leer el archivo: " + e.getMessage());
+        // Configuración según el dataset
+        if (filePath.equals("iris.data")) {
+            labelColumn = 4; // La última columna contiene las etiquetas
+            ignoreColumns = 0; // No hay columnas iniciales para ignorar
+        } else if (filePath.equals("wine.data")) {
+            labelColumn = 0; // La primera columna contiene las etiquetas
+            ignoreColumns = 0; // No hay columnas iniciales para ignorar
+        } else if (filePath.equals("wdbc.data")) {
+            labelColumn = 1; // La segunda columna contiene las etiquetas
+            ignoreColumns = 1; // Ignorar la primera columna (identificador)
+        } else {
+            System.out.println("Archivo no reconocido. Revisa la configuración.");
+            return;
         }
 
-        // Verificar los datos cargados
+        Dataset dataset = new Dataset();
+
+        // Cargar el dataset
+        try {
+            dataset.loadCSV(filePath, labelColumn, ignoreColumns);
+        } catch (IOException e) {
+            System.out.println("Error al cargar el archivo: " + e.getMessage());
+            return;
+        }
+
+        List<double[]> data = dataset.getData();
+        List<String> labels = dataset.getLabels();
+
+        // Validar si el dataset fue cargado correctamente
+        if (data.isEmpty() || labels.isEmpty()) {
+            System.out.println("Error: El dataset no contiene datos.");
+            return;
+        }
+
         System.out.println("Tamaño del dataset: " + data.size());
-        System.out.println("Número de características: " + (data.isEmpty() ? 0 : data.get(0).length));
-        System.out.println("Ejemplo de etiqueta: " + (labels.isEmpty() ? "Ninguna" : labels.get(0)));
+        System.out.println("Número de características: " + (data.get(0).length));
+        System.out.println("Ejemplo de etiqueta: " + labels.get(0));
 
-        // Validar el clasificador con los métodos disponibles
-        double accuracyHoldOut = Validation.holdOut(data, labels, 0.7);
-        System.out.println("Accuracy Hold-Out: " + accuracyHoldOut);
+        // Resultados con OneNN
+        System.out.println("\nResultados con el clasificador OneNN:");
+        try {
+            double accuracyOneNNHoldOut = Validation.holdOut(data, labels, 0.7);
+            System.out.println("Accuracy Hold-Out: " + accuracyOneNNHoldOut);
 
-        double accuracyKFold = Validation.kFoldCrossValidation(data, labels, 10);
-        System.out.println("Accuracy 10-Fold: " + accuracyKFold);
+            double accuracyOneNNKFold = Validation.kFoldCrossValidation(data, labels, 10);
+            System.out.println("Accuracy 10-Fold: " + accuracyOneNNKFold);
 
-        double accuracyLeaveOneOut = Validation.leaveOneOut(data, labels);
-        System.out.println("Accuracy Leave-One-Out: " + accuracyLeaveOneOut);
+            double accuracyOneNNLeaveOneOut = Validation.leaveOneOut(data, labels);
+            System.out.println("Accuracy Leave-One-Out: " + accuracyOneNNLeaveOneOut);
+        } catch (Exception e) {
+            System.out.println("Error en OneNN: " + e.getMessage());
+        }
+
+        // Resultados con Distancia Euclidiana
+        System.out.println("\nResultados con el clasificador Distancia Euclidiana:");
+        try {
+            double accuracyEuclideanHoldOut = Validation.holdOut(data, labels, 0.7);
+            System.out.println("Accuracy Hold-Out: " + accuracyEuclideanHoldOut);
+
+            double accuracyEuclideanKFold = Validation.kFoldCrossValidation(data, labels, 10);
+            System.out.println("Accuracy 10-Fold: " + accuracyEuclideanKFold);
+
+            double accuracyEuclideanLeaveOneOut = Validation.leaveOneOut(data, labels);
+            System.out.println("Accuracy Leave-One-Out: " + accuracyEuclideanLeaveOneOut);
+        } catch (Exception e) {
+            System.out.println("Error en Distancia Euclidiana: " + e.getMessage());
+        }
     }
 }
